@@ -29,6 +29,45 @@ export default function Home() {
   const [currentWeather, setCurrentWeather] = useState<WeatherConditions | null>(null);
   const [weatherForecast, setWeatherForecast] = useState<any[]>([]);
 
+  const normalizeCrop = (crop: string): CropType => {
+    const mapping: Record<string, CropType> = {
+      'rice': 'Rice',
+      'wheat': 'Wheat',
+      'cotton': 'Cotton',
+      'maize': 'Maize',
+      'vegetables': 'Vegetables',
+    };
+    return mapping[crop.toLowerCase()] || crop as CropType;
+  };
+
+  const normalizeState = (state: string): StateType => {
+    const mapping: Record<string, StateType> = {
+      'punjab': 'Punjab',
+      'haryana': 'Haryana',
+      'uttar pradesh': 'Uttar Pradesh',
+      'maharashtra': 'Maharashtra',
+      'gujarat': 'Gujarat',
+      'madhya pradesh': 'Madhya Pradesh',
+      'karnataka': 'Karnataka',
+      'andhra pradesh': 'Andhra Pradesh',
+      'tamil nadu': 'Tamil Nadu',
+      'bihar': 'Bihar',
+    };
+    return mapping[state.toLowerCase()] || state as StateType;
+  };
+
+  const normalizeSoil = (soil: string): SoilType => {
+    const mapping: Record<string, SoilType> = {
+      'alluvial': 'Alluvial',
+      'black': 'Black',
+      'red': 'Red',
+      'laterite': 'Laterite',
+      'desert': 'Desert',
+      'mountain': 'Mountain',
+    };
+    return mapping[soil.toLowerCase()] || soil as SoilType;
+  };
+
   useEffect(() => {
     const savedData = localStorage.getItem('farmer-app-data');
     if (savedData) {
@@ -45,13 +84,16 @@ export default function Home() {
       cacheDataToLocalStorage('weather-forecast', forecast);
       
       const userProfile: UserProfile = {
-        crop: data.crop as CropType,
-        state: data.location as StateType,
-        soil: data.soil as SoilType,
+        crop: normalizeCrop(data.crop),
+        state: normalizeState(data.location),
+        soil: normalizeSoil(data.soil),
         growthStage: data.growthStage as GrowthStage | undefined,
       };
       
+      console.log('User profile for filtering:', userProfile);
+      
       const tips = getSmartTips(userProfile, weather, 5);
+      console.log('Filtered tips result:', tips);
       setFilteredTips(tips);
       cacheDataToLocalStorage('filtered-tips', tips);
     }
