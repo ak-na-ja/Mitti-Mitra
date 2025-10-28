@@ -34,6 +34,7 @@ Preferred communication style: Simple, everyday language.
 - **Expert Connection System**: Farmers can connect with agricultural experts via call or message. Features intelligent filtering by crop type and location, search functionality, expert profiles with ratings, availability status, and contact history tracking.
 - **Google OAuth Authentication**: Implemented for user login, including smart redirect logic for new vs. returning users and a mock authentication mode for development.
 - **Onboarding Flow**: A 4-step process (Name, Crop, Location, Soil) to gather essential farmer information, stored in LocalStorage.
+- **Global Header with App Logo**: Sticky header component displaying the centered Mittimitra logo (70px height) with language toggle in top-right corner. Logo is clickable to navigate home from non-home pages. Consistent placement across all screens (Login, Onboarding, Home tabs, Profile).
 
 ## External Dependencies
 
