@@ -2,7 +2,7 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
-import { analyzeCropImage } from "./gemini";
+import { analyzeCropImage, translateAnalysisToHindi, type TranslationRequest } from "./gemini";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -30,6 +30,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Analysis error:", error);
       res.status(500).json({ error: "Failed to analyze image" });
+    }
+  });
+
+  app.post("/api/translate-analysis", async (req, res) => {
+    try {
+      const analysisData = req.body as TranslationRequest;
+      
+      if (!analysisData || !analysisData.generalHealth) {
+        return res.status(400).json({ error: "Invalid analysis data" });
+      }
+
+      const translated = await translateAnalysisToHindi(analysisData);
+      
+      res.json(translated);
+    } catch (error) {
+      console.error("Translation error:", error);
+      res.status(500).json({ error: "Failed to translate analysis" });
     }
   });
 
