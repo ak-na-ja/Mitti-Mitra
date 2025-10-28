@@ -9,6 +9,7 @@ import MessageModal from '@/components/MessageModal';
 import BottomNav from '@/components/BottomNav';
 import LanguageToggle from '@/components/LanguageToggle';
 import PestHelp from '@/components/PestHelp';
+import HistoryFeedback from '@/components/HistoryFeedback';
 import Profile from '@/pages/Profile';
 import { Droplets, Bug, Sprout, Leaf, Mountain, Calendar, CloudRain, ThermometerSun, Layers, Beaker, Flower, HelpCircle, Users, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -345,8 +346,9 @@ export default function Home() {
       />
 
       {activeTab === 'pest' && (
-        <div className="px-4 py-6">
+        <div className="px-4 py-6 space-y-8">
           <PestHelp />
+          <HistoryFeedback />
         </div>
       )}
 

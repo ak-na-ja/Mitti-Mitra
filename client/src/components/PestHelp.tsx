@@ -4,6 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Camera, Mic, Volume2, X, AlertCircle, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+import { saveAdviceSession } from '@/utils/adviceSessionStorage';
+import type { AdviceSession } from '@/types/adviceSession';
 
 interface Issue {
   type: string;
@@ -59,6 +61,8 @@ export default function PestHelp() {
           setEnglishResult(resultData);
           setHindiResult(null);
           setResult(resultData);
+          
+          saveSessionToHistory(resultData, file.name);
         } catch (error) {
           console.error('Analysis failed:', error);
           const errorData = {
@@ -153,6 +157,51 @@ export default function PestHelp() {
       case 'low': return 'border-primary/50 bg-primary/5';
       default: return '';
     }
+  };
+
+  const saveSessionToHistory = (analysisResult: AnalysisResult, fileName: string) => {
+    const userData = localStorage.getItem('farmer-app-data');
+    const cropType = userData ? JSON.parse(userData).crop : 'Unknown';
+    
+    const primaryIssue = analysisResult.issues[0]?.type || 'General Analysis';
+    const topic = primaryIssue;
+    const issue = analysisResult.issues.map(i => i.type).join(', ') || 'Crop health check';
+    
+    const recommendationSummary = analysisResult.recommendations.slice(0, 2).join('. ') || 
+                                 analysisResult.generalHealth;
+    
+    const fullRecommendation = [
+      `General Health: ${analysisResult.generalHealth}`,
+      '',
+      'Issues Found:',
+      ...analysisResult.issues.map((issue, idx) => 
+        `${idx + 1}. ${issue.type} (${issue.severity} severity)\n   ${issue.description}\n   Solution: ${issue.solution}`
+      ),
+      '',
+      'Recommendations:',
+      ...analysisResult.recommendations.map((rec, idx) => `${idx + 1}. ${rec}`)
+    ].join('\n');
+
+    const session: AdviceSession = {
+      id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      date: new Date().toISOString(),
+      cropType: cropType.charAt(0).toUpperCase() + cropType.slice(1),
+      issue,
+      topic,
+      recommendationSummary,
+      fullRecommendation,
+      imageUrl: analysisResult.imageUrl,
+      farmerFeedback: {
+        rating: 0,
+        notes: '',
+        stepsTaken: '',
+        actualOutcome: '',
+        outcomeStatus: 'pending',
+        dateAdded: new Date().toISOString(),
+      },
+    };
+
+    saveAdviceSession(session);
   };
 
   if (isAnalyzing || isTranslating) {
