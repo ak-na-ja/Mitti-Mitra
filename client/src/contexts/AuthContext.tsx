@@ -32,10 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('farmer-app-auth');
-    localStorage.removeItem('farmer-app-onboarding');
-    localStorage.removeItem('farmer-app-data');
     localStorage.removeItem('filtered-tips');
-    localStorage.removeItem('current-weather');
     localStorage.removeItem('translation-cache');
   };
 
