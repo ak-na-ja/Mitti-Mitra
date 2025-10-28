@@ -93,20 +93,14 @@ export default function Profile() {
 
   const handleSaveChanges = () => {
     const updatedData = {
+      name: profileData?.name,
       crop: editedData.crop,
       location: editedData.location,
       district: editedData.district,
       soil: editedData.soil,
     };
-    
-    const updatedWeather = {
-      temperature: editedData.temperature || 25,
-      rainfall: editedData.rainfall || 10,
-      humidity: editedData.humidity || 60,
-    };
 
     localStorage.setItem('farmer-app-data', JSON.stringify(updatedData));
-    localStorage.setItem('current-weather', JSON.stringify(updatedWeather));
     
     localStorage.removeItem('filtered-tips');
     
