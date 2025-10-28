@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronRight, Sprout, MapPin, Mountain } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 interface Option {
   value: string;
@@ -40,6 +41,9 @@ export default function OnboardingStep({
 
   return (
     <div className="flex flex-col h-screen bg-background">
+      <div className="py-3 flex justify-center">
+        <Logo />
+      </div>
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         <div className="w-full max-w-md space-y-8">
           <div className="flex justify-center gap-2 mb-8">

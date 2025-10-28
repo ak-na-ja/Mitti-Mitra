@@ -34,6 +34,16 @@ Preferred communication style: Simple, everyday language.
 - **Expert Connection System**: Farmers can connect with agricultural experts via call or message. Features intelligent filtering by crop type and location, search functionality, expert profiles with ratings, availability status, and contact history tracking.
 - **Google OAuth Authentication**: Implemented for user login, including smart redirect logic for new vs. returning users and a mock authentication mode for development.
 - **Onboarding Flow**: A 4-step process (Name, Crop, Location, Soil) to gather essential farmer information, stored in LocalStorage.
+- **Branding**: "Mitti Mitra" (Soil Friend) logo with earthy brown text (#8B6F47) and green leaf icon (#6B8E23), displayed consistently across all pages.
+
+### Branding & Visual Identity
+
+**"Mitti Mitra" Logo** (`client/src/components/Logo.tsx`)
+- **Typography**: Georgia serif font (28px mobile, 36px desktop)
+- **Colors**: Earthy brown text (#8B6F47), green leaf icon (#6B8E23)
+- **Placement**: Login screen (centered), Onboarding (top header), Main app (sticky header left side)
+- **Interactive**: Clickable link to home page from any screen
+- **Brand Values**: Earthy colors for farming theme, serif font for trust, leaf icon for nature connection
 
 ## External Dependencies
 

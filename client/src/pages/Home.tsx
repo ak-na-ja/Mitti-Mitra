@@ -11,6 +11,7 @@ import LanguageToggle from '@/components/LanguageToggle';
 import PestHelp from '@/components/PestHelp';
 import HistoryFeedback from '@/components/HistoryFeedback';
 import Profile from '@/pages/Profile';
+import Logo from '@/components/Logo';
 import { Droplets, Bug, Sprout, Leaf, Mountain, Calendar, CloudRain, ThermometerSun, Layers, Beaker, Flower, HelpCircle, Users, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Input } from '@/components/ui/input';
@@ -166,7 +167,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="sticky top-0 z-10 bg-background border-b border-border">
-        <div className="flex items-center justify-end p-4">
+        <div className="flex items-center justify-between p-4">
+          <Logo className="scale-90" />
           <LanguageToggle />
         </div>
       </div>

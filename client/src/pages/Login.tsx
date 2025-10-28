@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sprout } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Logo from '@/components/Logo';
 
 interface LoginProps {
   onLoginSuccess: () => void;
@@ -95,14 +96,12 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex flex-col items-center justify-center p-4">
+      <div className="py-3 mb-4">
+        <Logo />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="bg-green-100 dark:bg-green-900 p-4 rounded-full">
-              <Sprout className="w-12 h-12 text-green-600 dark:text-green-400" />
-            </div>
-          </div>
           <div>
             <CardTitle className="text-2xl font-bold">
               {t({ en: 'Farmer Advisory App', hi: 'किसान सलाहकार ऐप' })}

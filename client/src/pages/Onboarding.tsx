@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { User } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 interface OnboardingData {
   name?: string;
@@ -72,7 +73,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   if (currentStep === 0) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="py-3 mb-4">
+          <Logo />
+        </div>
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 space-y-6">
             <div className="text-center space-y-2">
