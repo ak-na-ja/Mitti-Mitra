@@ -42,6 +42,38 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: `connect-pg-simple` (configured for future PostgreSQL session store).
 ## Recent Changes
 
+### Google OAuth Authentication (October 2025)
+1. **Login Screen Implementation**
+   - Created dedicated Login page with Google OAuth integration
+   - Integrated @react-oauth/google library for Google sign-in
+   - Added mock authentication mode for testing without actual OAuth setup
+   - Google sign-in button follows official brand guidelines (white background, Google colors, 44px minimum height)
+   - Positioned below "OR" divider for clear visual separation
+
+2. **Authentication Context**
+   - Created AuthContext to manage global authentication state
+   - Stores user data (email, name, profile picture, OAuth token) in localStorage
+   - Provides login/logout functions throughout the app
+   - Persists authentication across page refreshes
+
+3. **Smart Redirect Logic**
+   - First-time users: Login → Onboarding → Home
+   - Returning users: Login → Home (skips onboarding)
+   - Unauthenticated users: Redirected to Login screen
+   - Profile and onboarding data persist across logout/login cycles
+
+4. **Logout Functionality**
+   - Added Account section in Profile tab
+   - Displays authenticated user's email and name
+   - Logout button clears authentication but preserves profile data
+   - Allows users to switch accounts without losing farm profile
+
+5. **Mock Authentication Mode**
+   - Simulates Google OAuth flow without requiring actual OAuth setup
+   - Creates test user with email "farmer.test@example.com"
+   - Includes 1-second delay to simulate network request
+   - Perfect for development and testing
+
 ### Profile Feature Updates (October 2025)
 1. **Farmer Name Added to Onboarding**
    - New Step 0 in onboarding flow: Name input field
