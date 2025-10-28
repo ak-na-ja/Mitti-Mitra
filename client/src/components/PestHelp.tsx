@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,10 @@ export default function PestHelp() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [englishResult, setEnglishResult] = useState<AnalysisResult | null>(null);
+  const [hindiResult, setHindiResult] = useState<AnalysisResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,50 +42,40 @@ export default function PestHelp() {
         try {
           const formData = new FormData();
           formData.append('image', file);
-          formData.append('language', language);
+          formData.append('language', 'en');
 
           const analysis = await apiRequest('/api/analyze-crop', {
             method: 'POST',
             body: formData,
           });
 
-          setResult({
+          const resultData = {
             issues: analysis.issues || [],
             generalHealth: analysis.generalHealth || '',
             recommendations: analysis.recommendations || [],
             imageUrl,
-          });
+          };
+
+          setEnglishResult(resultData);
+          setHindiResult(null);
+          setResult(resultData);
         } catch (error) {
           console.error('Analysis failed:', error);
-          const errorMessages = language === 'hi' 
-            ? {
-                type: 'विश्लेषण त्रुटि',
-                description: 'छवि का विश्लेषण नहीं कर सके। कृपया पुनः प्रयास करें।',
-                solution: 'सुनिश्चित करें कि छवि स्पष्ट है और फसल या मिट्टी को स्पष्ट रूप से दिखाती है।',
-                health: 'निर्धारित करने में असमर्थ',
-                rec1: 'एक स्पष्ट छवि अपलोड करने का प्रयास करें',
-                rec2: 'अच्छी रोशनी सुनिश्चित करें',
-              }
-            : {
-                type: 'Analysis Error',
-                description: 'Could not analyze the image. Please try again.',
-                solution: 'Ensure the image is clear and shows the crop or soil clearly.',
-                health: 'Unable to determine',
-                rec1: 'Try uploading a clearer image',
-                rec2: 'Ensure good lighting',
-              };
-          
-          setResult({
+          const errorData = {
             issues: [{
-              type: errorMessages.type,
-              severity: 'medium',
-              description: errorMessages.description,
-              solution: errorMessages.solution,
+              type: 'Analysis Error',
+              severity: 'medium' as const,
+              description: 'Could not analyze the image. Please try again.',
+              solution: 'Ensure the image is clear and shows the crop or soil clearly.',
             }],
-            generalHealth: errorMessages.health,
-            recommendations: [errorMessages.rec1, errorMessages.rec2],
+            generalHealth: 'Unable to determine',
+            recommendations: ['Try uploading a clearer image', 'Ensure good lighting'],
             imageUrl,
-          });
+          };
+          
+          setEnglishResult(errorData);
+          setHindiResult(null);
+          setResult(errorData);
         } finally {
           setIsAnalyzing(false);
         }
@@ -91,8 +84,56 @@ export default function PestHelp() {
     }
   };
 
+  useEffect(() => {
+    const translateToHindi = async () => {
+      if (!englishResult || language === 'en') {
+        if (englishResult && language === 'en') {
+          setResult(englishResult);
+        }
+        return;
+      }
+
+      if (hindiResult) {
+        setResult(hindiResult);
+        return;
+      }
+
+      setIsTranslating(true);
+      try {
+        const translated = await apiRequest('/api/translate-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            generalHealth: englishResult.generalHealth,
+            issues: englishResult.issues,
+            recommendations: englishResult.recommendations,
+          }),
+        });
+
+        const hindiData = {
+          issues: translated.issues || [],
+          generalHealth: translated.generalHealth || '',
+          recommendations: translated.recommendations || [],
+          imageUrl: englishResult.imageUrl,
+        };
+
+        setHindiResult(hindiData);
+        setResult(hindiData);
+      } catch (error) {
+        console.error('Translation failed:', error);
+        setResult(englishResult);
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+
+    translateToHindi();
+  }, [language, englishResult, hindiResult]);
+
   const clearResult = () => {
     setResult(null);
+    setEnglishResult(null);
+    setHindiResult(null);
     setSelectedImage(null);
   };
 
@@ -114,14 +155,17 @@ export default function PestHelp() {
     }
   };
 
-  if (isAnalyzing) {
+  if (isAnalyzing || isTranslating) {
     return (
       <Card className="w-full">
         <CardContent className="p-6">
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <p className="text-lg font-semibold">
-              {t({ en: 'Analysing image', hi: 'छवि का विश्लेषण कर रहे हैं' })}
+              {isAnalyzing 
+                ? t({ en: 'Analysing image', hi: 'छवि का विश्लेषण कर रहे हैं' })
+                : t({ en: 'Translating to Hindi...', hi: 'हिंदी में अनुवाद कर रहे हैं...' })
+              }
             </p>
             <p className="text-sm text-muted-foreground text-center">
               {t({ en: 'This may take a few seconds', hi: 'इसमें कुछ सेकंड लग सकते हैं' })}
