@@ -31,6 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **Bilingual Translation**: React Context and LocalStorage cache manage English/Hindi content. Google Gemini API for automatic translation (cache-first approach).
 - **Offline-First**: LocalStorage caching for user profile, tips, weather data, and translations ensures functionality with poor connectivity.
 - **Farmer Profile Management**: Editable profile screen with farmer's name, crop, state, district, and soil type. Weather indicators (temperature, rainfall, humidity) are auto-fetched and read-only. Profile changes trigger automatic tip recalculation.
+- **Expert Connection System**: Farmers can connect with agricultural experts via call or message. Features intelligent filtering by crop type and location, search functionality, expert profiles with ratings, availability status, and contact history tracking.
 
 ## External Dependencies
 
@@ -141,3 +142,97 @@ Weather indicators are sourced from localStorage 'current-weather' which is popu
 - Mock weather data generator (getMockWeather) in development
 - Real weather API integration (future implementation)
 - Manual updates are NOT allowed to ensure data consistency
+
+## Expert Connection System (October 2025)
+
+### Feature Overview
+Farmers can connect with agricultural experts for personalized advice through calls or messages. The system helps farmers find relevant experts based on their crop type and location.
+
+### Expert Database
+- **Location**: `client/src/data/experts.ts`
+- **8 Mock Experts** with diverse specializations:
+  - Dr. Rajesh Kumar (Punjab) - Crop diseases, IPM, Soil health
+  - Priya Sharma (Haryana) - Irrigation, Water management
+  - Suresh Patel (Gujarat) - Cotton farming, Pest control
+  - Meena Devi (UP) - Organic farming, Composting
+  - Amit Singh (Maharashtra) - Soil testing, Nutrient management
+  - Lakshmi Reddy (Andhra Pradesh) - Rice cultivation, SRI method
+  - Karan Verma (Punjab) - IPM, Biological control
+  - Sunita Nair (Karnataka) - Vegetable farming, Greenhouse
+
+### Intelligent Filtering
+1. **Primary Filter**: By crop type AND location (state)
+   - Shows experts who specialize in farmer's crop OR work in farmer's state
+   - Function: `filterExpertsByCropAndLocation(experts, crop, state)`
+
+2. **Search Filter**: By name, title, location, or specialization
+   - Real-time search as farmer types
+   - Function: `searchExperts(experts, query)`
+
+### Expert Card UI
+**Component**: `client/src/components/ExpertCard.tsx`
+
+**Display Elements**:
+- Profile picture (56x56px) with availability status indicator
+  - Green dot = Available
+  - Grey dot = Unavailable
+- Name and professional title
+- Rating (out of 5) and total consultation count
+- Location: District, State
+- Specializations displayed as badges
+- Availability hours (e.g., "Available weekdays 9 AM - 5 PM")
+- Two action buttons (48px minimum height for accessibility):
+  - **Call Button**: Uses `tel:` protocol to initiate phone call
+  - **Message Button**: Opens messaging modal
+
+### Message Modal
+**Component**: `client/src/components/MessageModal.tsx`
+
+**Features**:
+- Expert profile summary (image, name, title)
+- Multi-line textarea for message input
+- Send button (disabled when message is empty)
+- Cancel button to close modal
+- Success toast notification on send
+- Stores sent messages in localStorage
+
+### Contact History Tracking
+Two localStorage keys maintain contact history:
+
+1. **`expert-contact-history`**: Tracks all interactions (calls + messages)
+```json
+[{
+  "expertId": "exp-001",
+  "expertName": "Dr. Rajesh Kumar",
+  "type": "call" | "message",
+  "timestamp": "2025-10-28T19:45:00.000Z"
+}]
+```
+
+2. **`expert-messages`**: Stores message content
+```json
+[{
+  "expertId": "exp-001",
+  "expertName": "Dr. Rajesh Kumar",
+  "message": "I need help with pest management",
+  "timestamp": "2025-10-28T19:45:00.000Z",
+  "status": "sent"
+}]
+```
+
+### User Flow
+1. Farmer navigates to **Tips tab**
+2. Scrolls to "Connect with Experts" section (below Weather Forecast)
+3. Sees experts filtered by their crop and location
+4. Can search for specific experts using search bar
+5. Views expert profiles with ratings and specializations
+6. Chooses to either:
+   - **Call**: Taps Call button → Phone app opens with expert's number
+   - **Message**: Taps Message button → Modal opens → Types message → Sends
+7. Contact history is automatically saved for future reference
+
+### Design Principles
+- Mobile-first: 48px minimum touch targets for buttons
+- Visual-first: Clear status indicators (green/grey availability dots)
+- Accessibility: Large text, clear icons, bilingual support
+- Offline-ready: Contact history persists in localStorage
