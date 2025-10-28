@@ -3,7 +3,7 @@ Built by **Scaler School of Business** Students
 
 # We are Mitti Mitra
 
-Mitti Mitra is web-app that helps farmers understand the soil and crop quality and provides solutions if they are bad. It also helps them on how to prevent such diseases on the crops and how to maintain the soil quality by uploading the image of it.
+Mitti Mitra is web-app that helps farmers understand the soil and crop quality by uploading its images and provides solutions if they are bad. It also helps them on how to prevent such diseases on the crops and how to maintain the soil quality.
 
 We have created using Replit and pushed it to git hub.
 
