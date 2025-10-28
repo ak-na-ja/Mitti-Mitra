@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sprout } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/Header';
 
 interface LoginProps {
   onLoginSuccess: () => void;
@@ -95,8 +96,10 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <Header />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="bg-green-100 dark:bg-green-900 p-4 rounded-full">
@@ -168,6 +171,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
