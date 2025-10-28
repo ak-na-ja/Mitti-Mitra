@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { stateDistricts, crops, soilTypes, type StateType } from '@/data/districts';
 
 interface ProfileData {
+  name?: string;
   crop: string;
   location: string;
   district?: string;
@@ -25,6 +26,7 @@ export default function Profile() {
   
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [editedData, setEditedData] = useState<ProfileData>({
+    name: '',
     crop: '',
     location: '',
     district: '',
@@ -44,6 +46,7 @@ export default function Profile() {
       const weatherData = savedWeather ? JSON.parse(savedWeather) : {};
       
       const profile: ProfileData = {
+        name: data.name || '',
         crop: data.crop || '',
         location: data.location || '',
         district: data.district || '',
@@ -136,10 +139,12 @@ export default function Profile() {
 
   return (
     <div className="px-4 py-6 space-y-6 pb-24">
-      <div className="flex items-center gap-3">
-        <User className="h-8 w-8 text-primary" />
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+          <User className="h-10 w-10 text-primary" />
+        </div>
         <h1 className="text-2xl font-bold" data-testid="heading-profile">
-          {t({ en: 'Farmer Profile', hi: 'किसान प्रोफ़ाइल' })}
+          {profileData?.name || t({ en: 'Farmer', hi: 'किसान' })}
         </h1>
       </div>
 
@@ -189,7 +194,7 @@ export default function Profile() {
       <Card data-testid="card-edit-profile">
         <CardHeader>
           <CardTitle className="text-lg">
-            {t({ en: 'Update Profile', hi: 'प्रोफ़ाइल अपडेट करें' })}
+            {t({ en: 'Farm Profile', hi: 'खेत प्रोफ़ाइल' })}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -278,58 +283,6 @@ export default function Profile() {
             </Select>
           </div>
 
-          <div className="border-t pt-6">
-            <h3 className="text-base font-semibold mb-4">
-              {t({ en: 'Weather Indicators', hi: 'मौसम संकेतक' })}
-            </h3>
-            
-            <div className="grid grid-cols-1 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="temperature" className="text-base font-medium flex items-center gap-2">
-                  <ThermometerSun className="h-4 w-4" />
-                  {t({ en: 'Temperature (°C)', hi: 'तापमान (°C)' })}
-                </Label>
-                <Input
-                  id="temperature"
-                  type="number"
-                  value={editedData.temperature}
-                  onChange={(e) => setEditedData({ ...editedData, temperature: parseFloat(e.target.value) })}
-                  className="h-12 text-base"
-                  data-testid="input-temperature"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="rainfall" className="text-base font-medium flex items-center gap-2">
-                  <CloudRain className="h-4 w-4" />
-                  {t({ en: 'Rainfall (mm)', hi: 'वर्षा (mm)' })}
-                </Label>
-                <Input
-                  id="rainfall"
-                  type="number"
-                  value={editedData.rainfall}
-                  onChange={(e) => setEditedData({ ...editedData, rainfall: parseFloat(e.target.value) })}
-                  className="h-12 text-base"
-                  data-testid="input-rainfall"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="humidity" className="text-base font-medium flex items-center gap-2">
-                  <Droplets className="h-4 w-4" />
-                  {t({ en: 'Humidity (%)', hi: 'आर्द्रता (%)' })}
-                </Label>
-                <Input
-                  id="humidity"
-                  type="number"
-                  value={editedData.humidity}
-                  onChange={(e) => setEditedData({ ...editedData, humidity: parseFloat(e.target.value) })}
-                  className="h-12 text-base"
-                  data-testid="input-humidity"
-                />
-              </div>
-            </div>
-          </div>
 
           <Button 
             onClick={handleSaveChanges} 

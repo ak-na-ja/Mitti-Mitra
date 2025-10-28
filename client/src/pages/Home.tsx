@@ -151,7 +151,7 @@ export default function Home() {
 
       {activeTab === 'home' && (
         <div className="px-4 py-6 space-y-6">
-          <HeroSection farmerName="राजेश" />
+          <HeroSection farmerName={userData?.name} />
           <WeeklyChecklist items={weeklyTasks} />
         </div>
       )}
