@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User, MapPin, Sprout, Mountain, ThermometerSun, CloudRain, Droplets, Save } from 'lucide-react';
+import { User, MapPin, Sprout, Mountain, ThermometerSun, CloudRain, Droplets, Save, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { stateDistricts, crops, soilTypes, type StateType } from '@/data/districts';
 
@@ -23,6 +24,7 @@ interface ProfileData {
 export default function Profile() {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { logout, user } = useAuth();
   
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [editedData, setEditedData] = useState<ProfileData>({
@@ -285,6 +287,38 @@ export default function Profile() {
           >
             <Save className="h-5 w-5 mr-2" />
             {t({ en: 'Save Changes', hi: 'परिवर्तन सहेजें' })}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card data-testid="card-account">
+        <CardHeader>
+          <CardTitle className="text-lg">
+            {t({ en: 'Account', hi: 'खाता' })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {user && (
+            <div className="space-y-2 text-sm" data-testid="text-user-info">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">{t({ en: 'Email:', hi: 'ईमेल:' })}</span>
+                <span className="font-medium">{user.email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">{t({ en: 'Name:', hi: 'नाम:' })}</span>
+                <span className="font-medium">{user.name}</span>
+              </div>
+            </div>
+          )}
+          
+          <Button 
+            onClick={logout} 
+            variant="destructive"
+            className="w-full h-12 text-base"
+            data-testid="button-logout"
+          >
+            <LogOut className="h-5 w-5 mr-2" />
+            {t({ en: 'Logout', hi: 'लॉग आउट' })}
           </Button>
         </CardContent>
       </Card>
