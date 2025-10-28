@@ -1,14 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HeroSection from '@/components/HeroSection';
 import WeeklyChecklist from '@/components/WeeklyChecklist';
 import TipCard from '@/components/TipCard';
 import BottomNav from '@/components/BottomNav';
 import LanguageToggle from '@/components/LanguageToggle';
 import PestHelp from '@/components/PestHelp';
-import { Droplets, Sun, Bug, Sprout } from 'lucide-react';
+import { Droplets, Sun, Bug, Sprout, Leaf, Mountain, Calendar } from 'lucide-react';
+import { getTipsForUser } from '@/data/farmingTips';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'home' | 'tips' | 'pest' | 'profile'>('home');
+  const { t } = useLanguage();
+  const [userData, setUserData] = useState<any>(null);
+  const [personalizedTips, setPersonalizedTips] = useState<any[]>([]);
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('farmer-app-data');
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      setUserData(data);
+      const tips = getTipsForUser(data.crop, data.location, data.soil);
+      setPersonalizedTips(tips);
+    }
+  }, []);
 
   const weeklyTasks = [
     { id: '1', label: { en: 'Water crops in early morning', hi: 'सुबह जल्दी फसलों को पानी दें' }, icon: 'water' as const },
@@ -16,28 +31,18 @@ export default function Home() {
     { id: '3', label: { en: 'Apply organic fertilizer', hi: 'जैविक उर्वरक डालें' }, icon: 'plant' as const },
   ];
 
-  const tips = [
-    {
-      icon: Droplets,
-      title: { en: 'Irrigation Schedule', hi: 'सिंचाई कार्यक्रम' },
-      description: { en: 'Water every 3 days in current weather', hi: 'मौजूदा मौसम में हर 3 दिन में पानी दें' },
-    },
-    {
-      icon: Sun,
-      title: { en: 'Best Planting Time', hi: 'रोपण का सबसे अच्छा समय' },
-      description: { en: 'Next planting window: 15-20 days', hi: 'अगली रोपण अवधि: 15-20 दिन' },
-    },
-    {
-      icon: Bug,
-      title: { en: 'Pest Prevention', hi: 'कीट रोकथाम' },
-      description: { en: 'Use neem spray this week', hi: 'इस सप्ताह नीम स्प्रे का उपयोग करें' },
-    },
-    {
-      icon: Sprout,
-      title: { en: 'Crop Health', hi: 'फसल स्वास्थ्य' },
-      description: { en: 'Monitor growth and remove weeds', hi: 'वृद्धि की निगरानी करें और खरपतवार हटाएं' },
-    },
-  ];
+  const getIconComponent = (iconName: string) => {
+    const icons: any = {
+      droplets: Droplets,
+      sprout: Sprout,
+      bug: Bug,
+      plant: Leaf,
+      mountain: Mountain,
+      calendar: Calendar,
+      'spray-can': Bug,
+    };
+    return icons[iconName] || Sprout;
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -55,16 +60,38 @@ export default function Home() {
       )}
 
       {activeTab === 'tips' && (
-        <div className="px-4 py-6 space-y-4">
-          {tips.map((tip, index) => (
-            <TipCard
-              key={index}
-              icon={tip.icon}
-              title={tip.title}
-              description={tip.description}
-              onClick={() => console.log('Tip clicked:', tip.title.en)}
-            />
-          ))}
+        <div className="px-4 py-6 space-y-6">
+          {userData && (
+            <div className="bg-primary/10 p-4 rounded-2xl border border-primary/20">
+              <h3 className="font-semibold text-lg mb-2">
+                {t({ en: 'Personalized for You', hi: 'आपके लिए वैयक्तिकृत' })}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t({ en: `Tips for ${userData.crop} in ${userData.location}`, hi: `${userData.location} में ${userData.crop} के लिए सुझाव` })}
+              </p>
+            </div>
+          )}
+
+          {personalizedTips.length > 0 ? (
+            <div className="space-y-4">
+              {personalizedTips.map((tip) => (
+                <TipCard
+                  key={tip.id}
+                  icon={getIconComponent(tip.icon)}
+                  title={tip.title}
+                  description={tip.description}
+                  onClick={() => console.log('Tip clicked:', tip.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 space-y-4">
+              <Sprout className="h-16 w-16 mx-auto text-muted-foreground" />
+              <p className="text-muted-foreground">
+                {t({ en: 'Complete onboarding to see personalized tips', hi: 'वैयक्तिकृत सुझाव देखने के लिए ऑनबोर्डिंग पूरी करें' })}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
