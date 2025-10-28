@@ -39,6 +39,7 @@ export default function PestHelp() {
         try {
           const formData = new FormData();
           formData.append('image', file);
+          formData.append('language', language);
 
           const analysis = await apiRequest('/api/analyze-crop', {
             method: 'POST',
@@ -53,15 +54,33 @@ export default function PestHelp() {
           });
         } catch (error) {
           console.error('Analysis failed:', error);
+          const errorMessages = language === 'hi' 
+            ? {
+                type: 'विश्लेषण त्रुटि',
+                description: 'छवि का विश्लेषण नहीं कर सके। कृपया पुनः प्रयास करें।',
+                solution: 'सुनिश्चित करें कि छवि स्पष्ट है और फसल या मिट्टी को स्पष्ट रूप से दिखाती है।',
+                health: 'निर्धारित करने में असमर्थ',
+                rec1: 'एक स्पष्ट छवि अपलोड करने का प्रयास करें',
+                rec2: 'अच्छी रोशनी सुनिश्चित करें',
+              }
+            : {
+                type: 'Analysis Error',
+                description: 'Could not analyze the image. Please try again.',
+                solution: 'Ensure the image is clear and shows the crop or soil clearly.',
+                health: 'Unable to determine',
+                rec1: 'Try uploading a clearer image',
+                rec2: 'Ensure good lighting',
+              };
+          
           setResult({
             issues: [{
-              type: 'Analysis Error',
+              type: errorMessages.type,
               severity: 'medium',
-              description: 'Could not analyze the image. Please try again.',
-              solution: 'Ensure the image is clear and shows the crop or soil clearly.',
+              description: errorMessages.description,
+              solution: errorMessages.solution,
             }],
-            generalHealth: 'Unable to determine',
-            recommendations: ['Try uploading a clearer image', 'Ensure good lighting'],
+            generalHealth: errorMessages.health,
+            recommendations: [errorMessages.rec1, errorMessages.rec2],
             imageUrl,
           });
         } finally {
@@ -102,7 +121,7 @@ export default function PestHelp() {
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <p className="text-lg font-semibold">
-              {t({ en: 'Analyzing your crop...', hi: 'आपकी फसल का विश्लेषण कर रहे हैं...' })}
+              {t({ en: 'Analysing image', hi: 'छवि का विश्लेषण कर रहे हैं' })}
             </p>
             <p className="text-sm text-muted-foreground text-center">
               {t({ en: 'This may take a few seconds', hi: 'इसमें कुछ सेकंड लग सकते हैं' })}
@@ -167,10 +186,17 @@ export default function PestHelp() {
                           <h5 className="font-semibold text-base mb-1">{issue.type}</h5>
                           <p className="text-sm text-muted-foreground mb-3">{issue.description}</p>
                           <div className="bg-background/50 p-3 rounded-lg">
-                            <p className="text-sm font-medium mb-1">
+                            <p className="text-sm font-medium mb-2">
                               {t({ en: 'Solution:', hi: 'समाधान:' })}
                             </p>
-                            <p className="text-sm">{issue.solution}</p>
+                            <div className="text-sm space-y-1">
+                              {issue.solution.split('\n').filter(line => line.trim()).map((line, idx) => (
+                                <div key={idx} className="flex items-start gap-2">
+                                  <span className="text-primary mt-0.5">•</span>
+                                  <span>{line.replace(/^[•\-]\s*/, '').trim()}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>

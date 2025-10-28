@@ -22,8 +22,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const imageBase64 = req.file.buffer.toString('base64');
       const mimeType = req.file.mimetype;
+      const language = req.body.language || 'en';
 
-      const analysis = await analyzeCropImage(imageBase64, mimeType);
+      const analysis = await analyzeCropImage(imageBase64, mimeType, language);
       
       res.json(analysis);
     } catch (error) {

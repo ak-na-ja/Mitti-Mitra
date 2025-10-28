@@ -15,9 +15,15 @@ export interface CropAnalysis {
   recommendations: string[];
 }
 
-export async function analyzeCropImage(imageBase64: string, mimeType: string): Promise<CropAnalysis> {
+export async function analyzeCropImage(imageBase64: string, mimeType: string, language: string = 'en'): Promise<CropAnalysis> {
   try {
+    const languageInstruction = language === 'hi' 
+      ? 'Respond in Hindi language (Devanagari script).'
+      : 'Respond in English language.';
+
     const systemPrompt = `You are an expert agricultural advisor specializing in crop disease identification and soil health analysis for small farmers in India.
+
+${languageInstruction}
 
 Analyze the uploaded image and identify:
 1. Any diseases, pests, or nutrient deficiencies visible on leaves or plants
@@ -28,7 +34,7 @@ For each issue found, provide:
 - Type of issue (disease name, pest name, or deficiency)
 - Severity level (low, medium, high)
 - Clear description in simple terms
-- Practical, affordable solution using locally available materials
+- Practical, affordable solution using locally available materials. Format solutions as bullet points (each point on a new line starting with •)
 
 Respond with JSON in this exact format:
 {
@@ -37,7 +43,7 @@ Respond with JSON in this exact format:
       "type": "Issue name",
       "severity": "low/medium/high",
       "description": "Simple description",
-      "solution": "Step-by-step solution"
+      "solution": "• First step\n• Second step\n• Third step"
     }
   ],
   "generalHealth": "Overall health assessment",
