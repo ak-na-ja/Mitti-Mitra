@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import OnboardingStep from '@/components/OnboardingStep';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { User } from 'lucide-react';
 
 interface OnboardingData {
+  name?: string;
   crop?: string;
   location?: string;
   soil?: string;
@@ -38,8 +44,17 @@ const soilOptions = [
 ];
 
 export default function Onboarding({ onComplete }: OnboardingProps) {
-  const [currentStep, setCurrentStep] = useState(1);
+  const { t } = useLanguage();
+  const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({});
+  const [name, setName] = useState('');
+
+  const handleNameNext = () => {
+    if (name.trim()) {
+      setData({ ...data, name: name.trim() });
+      setCurrentStep(1);
+    }
+  };
 
   const handleNext = (value: string) => {
     if (currentStep === 1) {
@@ -55,11 +70,58 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     }
   };
 
+  if (currentStep === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 space-y-6">
+            <div className="text-center space-y-2">
+              <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <User className="h-10 w-10 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold">
+                {t({ en: 'Welcome!', hi: 'स्वागत है!' })}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                {t({ en: 'What is your name?', hi: 'आपका नाम क्या है?' })}
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <Input
+                type="text"
+                placeholder={t({ en: 'Enter your name', hi: 'अपना नाम दर्ज करें' })}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="h-14 text-lg text-center"
+                data-testid="input-name"
+                onKeyPress={(e) => e.key === 'Enter' && handleNameNext()}
+              />
+              
+              <Button 
+                onClick={handleNameNext}
+                disabled={!name.trim()}
+                className="w-full h-14 text-lg"
+                data-testid="button-next-name"
+              >
+                {t({ en: 'Continue', hi: 'जारी रखें' })}
+              </Button>
+            </div>
+            
+            <div className="text-center text-sm text-muted-foreground">
+              {t({ en: 'Step 1 of 4', hi: 'चरण 1/4' })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (currentStep === 1) {
     return (
       <OnboardingStep
-        step={1}
-        totalSteps={3}
+        step={2}
+        totalSteps={4}
         question={{ en: 'What crop are you growing?', hi: 'आप कौन सी फसल उगा रहे हैं?' }}
         options={cropOptions}
         icon="crop"
@@ -72,8 +134,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   if (currentStep === 2) {
     return (
       <OnboardingStep
-        step={2}
-        totalSteps={3}
+        step={3}
+        totalSteps={4}
         question={{ en: 'Where is your farm located?', hi: 'आपका खेत कहाँ स्थित है?' }}
         options={locationOptions}
         icon="location"
@@ -85,8 +147,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   return (
     <OnboardingStep
-      step={3}
-      totalSteps={3}
+      step={4}
+      totalSteps={4}
       question={{ en: 'What type of soil do you have?', hi: 'आपके पास किस प्रकार की मिट्टी है?' }}
       options={soilOptions}
       icon="soil"
