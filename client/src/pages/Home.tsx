@@ -7,7 +7,7 @@ import WeatherForecastCard from '@/components/WeatherForecastCard';
 import ExpertCard from '@/components/ExpertCard';
 import MessageModal from '@/components/MessageModal';
 import BottomNav from '@/components/BottomNav';
-import Header from '@/components/Header';
+import LanguageToggle from '@/components/LanguageToggle';
 import PestHelp from '@/components/PestHelp';
 import HistoryFeedback from '@/components/HistoryFeedback';
 import Profile from '@/pages/Profile';
@@ -165,7 +165,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <Header />
+      <div className="sticky top-0 z-10 bg-background border-b border-border">
+        <div className="flex items-center justify-end p-4">
+          <LanguageToggle />
+        </div>
+      </div>
 
       {activeTab === 'home' && (
         <div className="px-4 py-6 space-y-6">

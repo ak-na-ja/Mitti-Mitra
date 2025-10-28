@@ -62,27 +62,16 @@
 ## Component Library
 
 ### Navigation
-
-**Top Header** (Global)
-- Sticky positioning at top of all screens
-- Centered logo: 70px height, auto width, maintains aspect ratio
-- Logo clickable: Returns to home screen when clicked from other pages
-- Language toggle button: Top-right corner for consistent placement
-- Padding: 12px top, 16px bottom for visual breathing room
-- Border-bottom: Subtle separation from content below
-- Background: Matches app background color (bg-background)
-- Uses the Mittimitra logo (hand holding plant with Hindi text)
-- Logo file location: `/public/assets/logo.jpg`
-- Alt text: "Mittimitra Logo" for accessibility
-- Hover effect: Logo becomes clickable with elevation on non-home pages
-- Sticky header ensures logo is always visible on scroll
-
 **Bottom Tab Bar** (Primary Navigation)
 - Fixed bottom position, 72px height
 - 4 large icon buttons: Home, Tips, Pest Help, Profile
 - Active state: Icon + label visible, inactive: icon only
 - Icon size: 32x32px minimum
 - Text label: 14px below icon
+
+**Top Bar** (Contextual)
+- 64px height, includes back button (when needed) + page title + language toggle
+- Language toggle: Flag icons (IN-flag for Hindi, US-flag for English)
 
 ### Cards
 

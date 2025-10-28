@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { User } from 'lucide-react';
-import Header from '@/components/Header';
 
 interface OnboardingData {
   name?: string;
@@ -73,10 +72,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   if (currentStep === 0) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="flex items-center justify-center p-4 pt-8">
-          <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
           <CardContent className="pt-6 space-y-6">
             <div className="text-center space-y-2">
               <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
@@ -116,57 +113,47 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </div>
           </CardContent>
         </Card>
-        </div>
       </div>
     );
   }
 
   if (currentStep === 1) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <OnboardingStep
-          step={2}
-          totalSteps={4}
-          question={{ en: 'What crop are you growing?', hi: 'आप कौन सी फसल उगा रहे हैं?' }}
-          options={cropOptions}
-          icon="crop"
-          onNext={handleNext}
-          value={data.crop}
-        />
-      </div>
+      <OnboardingStep
+        step={2}
+        totalSteps={4}
+        question={{ en: 'What crop are you growing?', hi: 'आप कौन सी फसल उगा रहे हैं?' }}
+        options={cropOptions}
+        icon="crop"
+        onNext={handleNext}
+        value={data.crop}
+      />
     );
   }
 
   if (currentStep === 2) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <OnboardingStep
-          step={3}
-          totalSteps={4}
-          question={{ en: 'Where is your farm located?', hi: 'आपका खेत कहाँ स्थित है?' }}
-          options={locationOptions}
-          icon="location"
-          onNext={handleNext}
-          value={data.location}
-        />
-      </div>
+      <OnboardingStep
+        step={3}
+        totalSteps={4}
+        question={{ en: 'Where is your farm located?', hi: 'आपका खेत कहाँ स्थित है?' }}
+        options={locationOptions}
+        icon="location"
+        onNext={handleNext}
+        value={data.location}
+      />
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <OnboardingStep
-        step={4}
-        totalSteps={4}
-        question={{ en: 'What type of soil do you have?', hi: 'आपके पास किस प्रकार की मिट्टी है?' }}
-        options={soilOptions}
-        icon="soil"
-        onNext={handleNext}
-        value={data.soil}
-      />
-    </div>
+    <OnboardingStep
+      step={4}
+      totalSteps={4}
+      question={{ en: 'What type of soil do you have?', hi: 'आपके पास किस प्रकार की मिट्टी है?' }}
+      options={soilOptions}
+      icon="soil"
+      onNext={handleNext}
+      value={data.soil}
+    />
   );
 }
