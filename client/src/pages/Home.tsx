@@ -7,6 +7,7 @@ import WeatherForecastCard from '@/components/WeatherForecastCard';
 import BottomNav from '@/components/BottomNav';
 import LanguageToggle from '@/components/LanguageToggle';
 import PestHelp from '@/components/PestHelp';
+import Profile from '@/pages/Profile';
 import { Droplets, Bug, Sprout, Leaf, Mountain, Calendar, CloudRain, ThermometerSun, Layers, Beaker, Flower, HelpCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
@@ -68,7 +69,7 @@ export default function Home() {
     return mapping[soil.toLowerCase()] || soil as SoilType;
   };
 
-  useEffect(() => {
+  const loadUserDataAndTips = () => {
     const savedData = localStorage.getItem('farmer-app-data');
     if (savedData) {
       const data = JSON.parse(savedData);
@@ -97,6 +98,20 @@ export default function Home() {
       setFilteredTips(tips);
       cacheDataToLocalStorage('filtered-tips', tips);
     }
+  };
+
+  useEffect(() => {
+    loadUserDataAndTips();
+
+    const handleProfileUpdate = () => {
+      loadUserDataAndTips();
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
   }, []);
 
   const weeklyTasks = [
@@ -245,20 +260,7 @@ export default function Home() {
         </div>
       )}
 
-      {activeTab === 'profile' && (
-        <div className="px-4 py-6">
-          <div className="text-center space-y-4">
-            <div className="w-24 h-24 rounded-full bg-primary/10 mx-auto flex items-center justify-center">
-              <span className="text-4xl">👨‍🌾</span>
-            </div>
-            <h2 className="text-2xl font-bold">राजेश कुमार</h2>
-            <div className="space-y-2 text-muted-foreground">
-              <p>गेहूं • पंजाब • जलोढ़ मिट्टी</p>
-              <p>1.5 hectares</p>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeTab === 'profile' && <Profile />}
 
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
