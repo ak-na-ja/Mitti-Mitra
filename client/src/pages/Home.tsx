@@ -4,12 +4,15 @@ import WeeklyChecklist from '@/components/WeeklyChecklist';
 import SmartTipCard from '@/components/SmartTipCard';
 import WeatherAlertCard from '@/components/WeatherAlertCard';
 import WeatherForecastCard from '@/components/WeatherForecastCard';
+import ExpertCard from '@/components/ExpertCard';
+import MessageModal from '@/components/MessageModal';
 import BottomNav from '@/components/BottomNav';
 import LanguageToggle from '@/components/LanguageToggle';
 import PestHelp from '@/components/PestHelp';
 import Profile from '@/pages/Profile';
-import { Droplets, Bug, Sprout, Leaf, Mountain, Calendar, CloudRain, ThermometerSun, Layers, Beaker, Flower, HelpCircle } from 'lucide-react';
+import { Droplets, Bug, Sprout, Leaf, Mountain, Calendar, CloudRain, ThermometerSun, Layers, Beaker, Flower, HelpCircle, Users, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Input } from '@/components/ui/input';
 import { 
   getSmartTips, 
   getMockWeather, 
@@ -21,6 +24,7 @@ import {
   type FilteredTips
 } from '@/utils/tipFiltering';
 import type { CropType, StateType, SoilType, GrowthStage } from '@/data/farmingTips';
+import { mockExperts, filterExpertsByCropAndLocation, searchExperts, type Expert } from '@/data/experts';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'home' | 'tips' | 'pest' | 'profile'>('home');
@@ -29,6 +33,10 @@ export default function Home() {
   const [filteredTips, setFilteredTips] = useState<FilteredTips | null>(null);
   const [currentWeather, setCurrentWeather] = useState<WeatherConditions | null>(null);
   const [weatherForecast, setWeatherForecast] = useState<any[]>([]);
+  const [filteredExperts, setFilteredExperts] = useState<Expert[]>([]);
+  const [expertSearchQuery, setExpertSearchQuery] = useState('');
+  const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const normalizeCrop = (crop: string): CropType => {
     const mapping: Record<string, CropType> = {
@@ -97,8 +105,21 @@ export default function Home() {
       console.log('Filtered tips result:', tips);
       setFilteredTips(tips);
       cacheDataToLocalStorage('filtered-tips', tips);
+
+      const experts = filterExpertsByCropAndLocation(mockExperts, data.crop, data.location);
+      setFilteredExperts(experts);
     }
   };
+
+  useEffect(() => {
+    if (expertSearchQuery.trim()) {
+      const searchResults = searchExperts(filteredExperts, expertSearchQuery);
+      setFilteredExperts(searchResults);
+    } else if (userData) {
+      const experts = filterExpertsByCropAndLocation(mockExperts, userData.crop, userData.location);
+      setFilteredExperts(experts);
+    }
+  }, [expertSearchQuery]);
 
   useEffect(() => {
     loadUserDataAndTips();
@@ -249,10 +270,79 @@ export default function Home() {
                   <WeatherForecastCard forecast={weatherForecast} />
                 </div>
               )}
+
+              {/* Connect with Experts */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-base flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    {t({ en: 'Connect with Experts', hi: 'विशेषज्ञों से जुड़ें' })}
+                  </h3>
+                </div>
+
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t({
+                      en: 'Search by name, specialization, or location...',
+                      hi: 'नाम, विशेषज्ञता या स्थान से खोजें...',
+                    })}
+                    value={expertSearchQuery}
+                    onChange={(e) => setExpertSearchQuery(e.target.value)}
+                    className="pl-10 h-12"
+                    data-testid="input-search-experts"
+                  />
+                </div>
+
+                {filteredExperts.length === 0 ? (
+                  <div 
+                    className="text-center py-12 space-y-4 bg-muted/30 rounded-2xl"
+                    data-testid="text-no-experts"
+                  >
+                    <Users className="h-16 w-16 mx-auto text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">
+                        {t({ 
+                          en: 'No experts available in your area', 
+                          hi: 'आपके क्षेत्र में कोई विशेषज्ञ उपलब्ध नहीं' 
+                        })}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {t({ 
+                          en: 'Try adjusting your search or check back later', 
+                          hi: 'अपनी खोज समायोजित करने का प्रयास करें या बाद में जांचें' 
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredExperts.map((expert) => (
+                      <ExpertCard
+                        key={expert.id}
+                        expert={expert}
+                        onMessage={(expert) => {
+                          setSelectedExpert(expert);
+                          setIsMessageModalOpen(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
       )}
+
+      <MessageModal
+        expert={selectedExpert}
+        isOpen={isMessageModalOpen}
+        onClose={() => {
+          setIsMessageModalOpen(false);
+          setSelectedExpert(null);
+        }}
+      />
 
       {activeTab === 'pest' && (
         <div className="px-4 py-6">
